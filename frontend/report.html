@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluation Report | AI Interviewer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --bg-card: rgba(18, 24, 38, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --accent-blue: #3b82f6;
+      --accent-indigo: #6366f1;
+      --accent-purple: #a855f7;
+      --accent-cyan: #06b6d4;
+      --accent-yellow: #f59e0b;
+      --accent-green: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 15% 70%, rgba(6, 182, 212, 0.1) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 36px;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px 6px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .nav-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .nav-pill:hover { color: #fff; }
+
+    .nav-pill.active {
+      background: var(--accent-blue);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(59, 130, 246, 0.5);
+    }
+
+    .nav-user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 9999px;
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 36px 20px 80px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .roles-badge {
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    .action-btn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 26px;
+      border-radius: 9999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn-pill:hover {
+      border-color: rgba(59, 130, 246, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .action-btn-pill.primary {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      border-color: transparent;
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="dashboard.html" class="brand-wrapper">
+      <div class="brand-icon"><i class="fa-solid fa-brain"></i></div>
+      <span class="brand-title">AI Interviewer</span>
+    </a>
+    <div class="nav-center">
+      <a href="dashboard.html" class="nav-pill"><i class="fa-solid fa-table-columns"></i> Dashboard</a>
+      <a href="interview.html" class="nav-pill active"><i class="fa-solid fa-video"></i> Take Another</a>
+    </div>
+    <div class="nav-user-chip">
+      <div class="user-avatar" id="avatar-initial">S</div>
+      <span id="user-display-name" style="font-size: 0.9rem; font-weight: 600;">Samarth Shetty</span>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div style="text-align: center; margin-bottom: 30px;">
+      <span class="roles-badge" style="background: rgba(16,185,129,0.15); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.3); margin-bottom: 12px;">
+        <i class="fa-solid fa-circle-check"></i> Evaluation Complete
+      </span>
+      <h1 id="score-display" style="font-size: 4.5rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 10px;">0<span style="font-size: 2rem; color: var(--text-muted);">/100</span></h1>
+      <p id="meta-display" style="color: var(--text-muted); font-size: 1rem;">Candidate • Role • Date</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 30px;">
+      <!-- Radar Chart Card -->
+      <div class="stat-card" style="padding: 24px; display: flex; flex-direction: column; align-items: center;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: #fff; align-self: flex-start; margin-bottom: 16px;">Core Competency Radar</h3>
+        <div style="width: 100%; max-width: 340px; height: 300px;">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Feedback Details -->
+      <div class="stat-card" style="padding: 28px;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 18px;">Dynamic AI Feedback</h3>
+
+        <div style="margin-bottom: 20px;">
+          <h4 style="font-size: 0.9rem; color: #fff; margin-bottom: 8px;"><i class="fa-solid fa-thumbs-up" style="color: var(--accent-green);"></i> Demonstrated Strengths</h4>
+          <ul id="strengths-list" style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: #cbd5e1;"></ul>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <h4 style="font-size: 0.9rem; color: #fff; margin-bottom: 8px;"><i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-yellow);"></i> Key Weaknesses</h4>
+          <ul id="weaknesses-list" style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: #cbd5e1;"></ul>
+        </div>
+
+        <div>
+          <h4 style="font-size: 0.9rem; color: #fff; margin-bottom: 8px;"><i class="fa-solid fa-bullseye" style="color: var(--accent-blue);"></i> Target Recommendations</h4>
+          <ul id="recs-list" style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; color: #cbd5e1;"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 16px;">
+      <a href="interview.html" class="action-btn-pill primary"><i class="fa-solid fa-rotate-right"></i> Retake Interview</a>
+      <a href="dashboard.html" class="action-btn-pill"><i class="fa-solid fa-house"></i> Back to Dashboard</a>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = api.getUser();
+      if (user && user.name) {
+        document.getElementById("user-display-name").innerText = user.name;
+        document.getElementById("avatar-initial").innerText = user.name.charAt(0).toUpperCase();
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const interviewId = params.get("id");
+      if (!interviewId) return;
+
+      try {
+        const report = await api.request(`/report/${interviewId}`);
+        document.getElementById("score-display").innerHTML = `${report.overall_score}<span style="font-size: 2rem; color: var(--text-muted);">/100</span>`;
+        document.getElementById("meta-display").innerText = `${report.candidate_name} • ${report.role} • ${report.date}`;
+
+        const populateList = (id, items) => {
+          const el = document.getElementById(id);
+          el.innerHTML = "";
+          (items || []).forEach(item => {
+            el.innerHTML += `<li style="display: flex; gap: 8px;"><i class="fa-solid fa-check" style="color: var(--accent-cyan); margin-top: 3px;"></i> ${item}</li>`;
+          });
+        };
+
+        populateList("strengths-list", report.strengths);
+        populateList("weaknesses-list", report.weaknesses);
+        populateList("recs-list", report.recommendations);
+
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: ['Technical', 'Communication', 'Completeness', 'Relevance', 'Speech'],
+            datasets: [{
+              label: 'Score Profile',
+              data: [
+                report.technical_score,
+                report.communication_score,
+                report.speech_score,
+                report.presentation_score,
+                report.overall_score
+              ],
+              backgroundColor: 'rgba(99, 102, 241, 0.28)',
+              borderColor: '#818cf8',
+              pointBackgroundColor: '#818cf8',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            scales: {
+              r: {
+                min: 0,
+                max: 100,
+                ticks: { display: false, stepSize: 20 },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                pointLabels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
+              }
+            },
+            plugins: { legend: { display: false } }
+          }
+        });
+      } catch (err) { alert(err.message); }
+    });
+  </script>
+</body>
+</html>

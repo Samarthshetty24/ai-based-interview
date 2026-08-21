@@ -1,0 +1,348 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Interviewer | Master Technical & Behavioral Interviews</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --bg-card: rgba(18, 24, 38, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --accent-blue: #3b82f6;
+      --accent-indigo: #6366f1;
+      --accent-purple: #a855f7;
+      --accent-cyan: #06b6d4;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 15% 70%, rgba(6, 182, 212, 0.12) 0%, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 48px;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      transition: color 0.2s ease;
+    }
+
+    .btn-nav-link:hover { color: #fff; }
+
+    .btn-nav-primary {
+      padding: 9px 22px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+    }
+
+    .hero-section {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 80px 20px 60px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: 3.6rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #60a5fa, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+
+    .hero-btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+
+    .btn-hero-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 36px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.05rem;
+      font-weight: 700;
+      box-shadow: 0 6px 25px rgba(37, 99, 235, 0.45);
+      transition: all 0.25s ease;
+    }
+
+    .btn-hero-main:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.65);
+    }
+
+    .btn-hero-alt {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 32px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.05rem;
+      font-weight: 600;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s ease;
+    }
+
+    .btn-hero-alt:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1140px;
+      margin: 0 auto 90px;
+      padding: 0 20px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 32px 24px;
+      text-align: left;
+      backdrop-filter: blur(16px);
+      transition: all 0.25s ease;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 36px 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(11, 15, 25, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="brand-wrapper">
+      <div class="brand-icon"><i class="fa-solid fa-brain"></i></div>
+      <span class="brand-title">AI Interviewer</span>
+    </a>
+
+    <div class="nav-actions">
+      <a href="login.html" class="btn-nav-link">Sign In</a>
+      <a href="register.html" class="btn-nav-primary">Get Started Free</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero-section">
+      <div class="hero-badge">
+        <i class="fa-solid fa-bolt"></i> Powered by Zero-Shot NLP Engine
+      </div>
+      <h1 class="hero-title">
+        Ace Your Next Interview with <span>Adaptive Real-Time AI</span>
+      </h1>
+      <p class="hero-subtitle">
+        Upload your resume and practice with autonomous AI-driven interviews that adapt difficulty dynamically, score your spoken answers, and generate objective evaluation reports.
+      </p>
+
+      <div class="hero-btn-group">
+        <a href="register.html" class="btn-hero-main">
+          Start Practicing Now <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <a href="login.html" class="btn-hero-alt">
+          Sign In to Account
+        </a>
+      </div>
+    </section>
+
+    <section class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon-box" style="color: var(--accent-cyan);">
+          <i class="fa-solid fa-file-invoice"></i>
+        </div>
+        <h3 class="feature-title">Resume-Driven Context</h3>
+        <p class="feature-desc">
+          Extracts real skills, technologies, and projects directly from your PDF resume without relying on fixed keyword templates.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-box" style="color: var(--accent-purple);">
+          <i class="fa-solid fa-sliders"></i>
+        </div>
+        <h3 class="feature-title">Dynamic Difficulty</h3>
+        <p class="feature-desc">
+          Questions adapt in real time: excelling leads to advanced system design prompts, while struggling pivots to core principles.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-box" style="color: var(--accent-green);">
+          <i class="fa-solid fa-chart-pie"></i>
+        </div>
+        <h3 class="feature-title">Comprehensive Scoring</h3>
+        <p class="feature-desc">
+          Receive multi-axis radar chart evaluations on technical accuracy, communication, completeness, and speech cadence.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 AI Interviewer. All rights reserved.</p>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>
+    // If candidate is already logged in, redirect directly to dashboard
+    if (api.getToken()) {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>
