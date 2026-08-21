@@ -1,4 +1,9 @@
-﻿const API_BASE = "http://127.0.0.1:8000/api";
+﻿const LIVE_BACKEND = "https://ai-based-interview-2.onrender.com/api";
+const LOCAL_BACKEND = "http://127.0.0.1:8000/api";
+
+const API_BASE = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+  ? LOCAL_BACKEND
+  : LIVE_BACKEND;
 
 const api = {
   getToken: () => localStorage.getItem("token"),
@@ -7,12 +12,9 @@ const api = {
   setUser: (user) => localStorage.setItem("user", JSON.stringify(user)),
   clear: () => localStorage.clear(),
 
-  // Enforce auth on private pages (dashboard, interview, resume, report)
   requireAuth: () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "login.html";
-    }
+    if (!token) window.location.href = "login.html";
   },
 
   request: async (endpoint, options = {}) => {
