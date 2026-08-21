@@ -1,10 +1,12 @@
 ﻿import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from backend.database import engine, Base
 from backend.routers import auth, resume, interview, report
 
+# Auto-create all tables in DB
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -21,10 +23,19 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={'detail': f'Server Error: {str(exc)}'}
+    )
+
+# API Routers
 app.include_router(auth.router, prefix='/api/auth', tags=['Auth'])
 app.include_router(resume.router, prefix='/api/resume', tags=['Resume'])
 app.include_router(interview.router, prefix='/api/interview', tags=['Interview'])
 app.include_router(report.router, prefix='/api/report', tags=['Report'])
 
+# Serve Frontend Files
 if os.path.exists('frontend'):
     app.mount('/', StaticFiles(directory='frontend', html=True), name='frontend')
