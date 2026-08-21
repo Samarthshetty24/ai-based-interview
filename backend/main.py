@@ -2,7 +2,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from backend.database import engine, Base
 from backend.routers import auth, resume, interview, report
 
@@ -22,12 +21,10 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-# 1. Include Backend API Routers under /api
-app.include_router(auth.router, prefix='/api')
-app.include_router(resume.router, prefix='/api')
-app.include_router(interview.router, prefix='/api')
-app.include_router(report.router, prefix='/api')
+app.include_router(auth.router, prefix='/api/auth', tags=['Auth'])
+app.include_router(resume.router, prefix='/api/resume', tags=['Resume'])
+app.include_router(interview.router, prefix='/api/interview', tags=['Interview'])
+app.include_router(report.router, prefix='/api/report', tags=['Report'])
 
-# 2. Serve Static Frontend Files
 if os.path.exists('frontend'):
     app.mount('/', StaticFiles(directory='frontend', html=True), name='frontend')
