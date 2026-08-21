@@ -1,5 +1,5 @@
 ﻿import os
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -22,18 +22,12 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
+# 1. Include Backend API Routers
 app.include_router(auth.router)
 app.include_router(resume.router)
 app.include_router(interview.router)
 app.include_router(report.router)
 
-# Mount and serve frontend static files
+# 2. Serve Static Frontend Files (HTML, JS, CSS, Media)
 if os.path.exists('frontend'):
-    app.mount('/static', StaticFiles(directory='frontend'), name='static')
-
-@app.get('/')
-@app.head('/')
-def serve_frontend():
-    if os.path.exists('frontend/index.html'):
-        return FileResponse('frontend/index.html')
-    return {'status': 'online', 'message': 'AI Interviewer 24/7 Engine Active'}
+    app.mount('/', StaticFiles(directory='frontend', html=True), name='frontend')
