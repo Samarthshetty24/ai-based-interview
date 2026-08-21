@@ -1,51 +1,51 @@
-﻿const API_BASE = window.location.origin.includes('127.0.0.1') || window.location.origin.includes('localhost')
-    ? 'http://127.0.0.1:8000/api'
-    : `${window.location.origin}/api`;
+﻿const API_BASE = window.location.origin.includes("127.0.0.1") || window.location.origin.includes("localhost")
+  ? "http://127.0.0.1:8000/api"
+  : `${window.location.origin}/api`;
 
 const api = {
-    getToken: () => localStorage.getItem('token'),
-    setToken: (token) => localStorage.setItem('token', token),
-    getUser: () => JSON.parse(localStorage.getItem('user') || '{}'),
-    setUser: (user) => localStorage.setItem('user', JSON.stringify(user)),
-    clear: () => localStorage.clear(),
+  getToken: () => localStorage.getItem("token"),
+  setToken: (token) => localStorage.setItem("token", token),
+  getUser: () => JSON.parse(localStorage.getItem("user") || "{}"),
+  setUser: (user) => localStorage.setItem("user", JSON.stringify(user)),
+  clear: () => localStorage.clear(),
 
-    requireAuth: () => {
-        const token = localStorage.getItem('token');
-        if (!token) window.location.href = 'login.html';
-    },
+  requireAuth: () => {
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "login.html";
+  },
 
-    request: async (endpoint, options = {}) => {
-        const token = api.getToken();
-        const headers = {};
-        if (token) headers['Authorization'] = `Bearer ${token}`;
+  request: async (endpoint, options = {}) => {
+    const token = api.getToken();
+    const headers = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
 
-        if (!(options.body instanceof FormData)) {
-            headers['Content-Type'] = 'application/json';
-        }
-
-        const res = await fetch(`${API_BASE}${endpoint}`, {
-            ...options,
-            headers: { ...headers, ...options.headers }
-        });
-
-        if (res.status === 401) {
-            api.clear();
-            window.location.href = 'login.html';
-            return;
-        }
-
-        const text = await res.text();
-        let data;
-        try {
-            data = text ? JSON.parse(text) : {};
-        } catch {
-            throw new Error(text || 'Server Error');
-        }
-
-        if (!res.ok) {
-            throw new Error(data.detail || data.message || `Request failed with status ${res.status}`);
-        }
-
-        return data;
+    if (!(options.body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
     }
+
+    const res = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers: { ...headers, ...options.headers }
+    });
+
+    if (res.status === 401) {
+      api.clear();
+      window.location.href = "login.html";
+      return;
+    }
+
+    const text = await res.text();
+    let data;
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      throw new Error(text || "Server Error");
+    }
+
+    if (!res.ok) {
+      throw new Error(data.detail || data.message || `Request failed with status ${res.status}`);
+    }
+
+    return data;
+  }
 };

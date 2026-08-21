@@ -10,10 +10,10 @@ from backend.models.models import User
 router = APIRouter()
 
 class ATSRequest(BaseModel):
-    target_role: str = 'Data Scientist'
+    target_role: str = "Data Scientist"
 
-@router.post('/upload')
-@router.post('')
+@router.post("/upload")
+@router.post("")
 async def upload_resume(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
@@ -22,39 +22,38 @@ async def upload_resume(
     try:
         content = await file.read()
         reader = PdfReader(io.BytesIO(content))
-        text = ''.join([page.extract_text() or '' for page in reader.pages])
+        text = "".join([page.extract_text() or "" for page in reader.pages])
 
-        # Save parsed resume to persistent user profile
         current_user.resume_text = text
         db.commit()
 
-        skills = ['Python', 'SQL', 'FastAPI', 'Machine Learning', 'Data Analysis', 'Git', 'Docker']
-        found_skills = [s for s in skills if s.lower() in text.lower()] or ['Python', 'SQL', 'FastAPI']
+        skills = ["Python", "SQL", "FastAPI", "Machine Learning", "Data Analysis", "Git", "Docker"]
+        found_skills = [s for s in skills if s.lower() in text.lower()] or ["Python", "SQL", "FastAPI"]
 
         return {
-            'status': 'success',
-            'parsed': {
-                'skills': found_skills,
-                'projects': [
-                    {'name': 'Profile Resume Project', 'description': 'Extracted directly from authenticated user profile.'}
+            "status": "success",
+            "parsed": {
+                "skills": found_skills,
+                "projects": [
+                    {"name": "Profile Resume Project", "description": "Extracted directly from authenticated user profile."}
                 ]
             }
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get('/status')
+@router.get("/status")
 async def check_resume_status(current_user: User = Depends(get_current_user)):
     has_resume = bool(current_user.resume_text and len(current_user.resume_text.strip()) > 0)
-    return {'has_resume': has_resume}
+    return {"has_resume": has_resume}
 
-@router.post('/ats-analyze')
+@router.post("/ats-analyze")
 async def analyze_ats(payload: ATSRequest, current_user: User = Depends(get_current_user)):
     return {
-        'status': 'success',
-        'report': {
-            'ats_percentage': 85,
-            'scores': {'keyword_match': 82, 'section_structure': 88},
-            'problems_and_corrections': []
+        "status": "success",
+        "report": {
+            "ats_percentage": 85,
+            "scores": {"keyword_match": 82, "section_structure": 88},
+            "problems_and_corrections": []
         }
     }
