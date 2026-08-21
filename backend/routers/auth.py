@@ -60,13 +60,26 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
+    
+    full_name = getattr(user_data, "full_name", None) or getattr(user_data, "name", "Candidate")
     hashed = get_password_hash(user_data.password)
-    new_user = User(email=user_data.email, hashed_password=hashed)
+    
+    new_user = User(
+        email=user_data.email,
+        hashed_password=hashed,
+        full_name=full_name
+    )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
     access_token = create_access_token(data={"sub": new_user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_name": new_user.full_name or "Candidate",
+        "user_email": new_user.email
+    }
 
 @router.post("/login", response_model=Token)
 @router.post("/auth/login", response_model=Token)
@@ -74,5 +87,11 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == user_data.email).first()
     if not user or not verify_password(user_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid email or password")
+    
     access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_name": user.full_name or "Candidate",
+        "user_email": user.email
+    }
