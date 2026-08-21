@@ -1,44 +1,41 @@
-﻿const LIVE_BACKEND = "https://ai-based-interview-2.onrender.com/api";
-const LOCAL_BACKEND = "http://127.0.0.1:8000/api";
-
-const API_BASE = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-  ? LOCAL_BACKEND
-  : LIVE_BACKEND;
+﻿const API_BASE = window.location.origin.includes('127.0.0.1') || window.location.origin.includes('localhost')
+  ? 'http://127.0.0.1:8000/api'
+  : ${window.location.origin}/api;
 
 const api = {
-  getToken: () => localStorage.getItem("token"),
-  setToken: (token) => localStorage.setItem("token", token),
-  getUser: () => JSON.parse(localStorage.getItem("user") || "{}"),
-  setUser: (user) => localStorage.setItem("user", JSON.stringify(user)),
+  getToken: () => localStorage.getItem('token'),
+  setToken: (token) => localStorage.setItem('token', token),
+  getUser: () => JSON.parse(localStorage.getItem('user') || '{}'),
+  setUser: (user) => localStorage.setItem('user', JSON.stringify(user)),
   clear: () => localStorage.clear(),
 
   requireAuth: () => {
-    const token = localStorage.getItem("token");
-    if (!token) window.location.href = "login.html";
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
   },
 
   request: async (endpoint, options = {}) => {
     const token = api.getToken();
     const headers = {};
-    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (token) headers['Authorization'] = Bearer ;
 
     if (!(options.body instanceof FormData)) {
-      headers["Content-Type"] = "application/json";
+      headers['Content-Type'] = 'application/json';
     }
 
-    const res = await fetch(`${API_BASE}${endpoint}`, {
+    const res = await fetch(${API_BASE}, {
       ...options,
       headers: { ...headers, ...options.headers }
     });
 
     if (res.status === 401) {
       api.clear();
-      window.location.href = "login.html";
+      window.location.href = 'login.html';
       return;
     }
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || "API Request Failed");
+    if (!res.ok) throw new Error(data.detail || 'API Request Failed');
     return data;
   }
 };

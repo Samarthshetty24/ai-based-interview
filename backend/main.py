@@ -22,12 +22,12 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-# 1. Include Backend API Routers
-app.include_router(auth.router)
-app.include_router(resume.router)
-app.include_router(interview.router)
-app.include_router(report.router)
+# 1. Include Backend API Routers under /api
+app.include_router(auth.router, prefix='/api')
+app.include_router(resume.router, prefix='/api')
+app.include_router(interview.router, prefix='/api')
+app.include_router(report.router, prefix='/api')
 
-# 2. Serve Static Frontend Files (HTML, JS, CSS, Media)
+# 2. Serve Static Frontend Files
 if os.path.exists('frontend'):
     app.mount('/', StaticFiles(directory='frontend', html=True), name='frontend')
