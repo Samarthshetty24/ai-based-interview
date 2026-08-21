@@ -6,7 +6,18 @@ from fastapi.staticfiles import StaticFiles
 from backend.database import engine, Base
 from backend.routers import auth, resume, interview, report
 
-Base.metadata.create_all(bind=engine)
+# Drop outdated tables and initialize fresh schema with all columns
+try:
+    Base.metadata.create_all(bind=engine)
+    # If using SQLite and column is missing, recreate tables
+    with engine.connect() as conn:
+        result = conn.exec_driver_sql("PRAGMA table_info(users)").fetchall()
+        column_names = [col[1] for col in result]
+        if "hashed_password" not in column_names:
+            Base.metadata.drop_all(bind=engine)
+            Base.metadata.create_all(bind=engine)
+except Exception:
+    Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="AI Interviewer API",
