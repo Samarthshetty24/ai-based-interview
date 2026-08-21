@@ -1,7 +1,9 @@
-﻿fastapi
+﻿@'
+fastapi
 uvicorn[standard]
 sqlalchemy
-pydantic
+pydantic[email]
+email-validator
 pydantic-settings
 python-jose[cryptography]
 passlib[bcrypt]
@@ -11,3 +13,4 @@ pypdf
 google-genai
 google-generativeai
 python-dotenv
+'@ | Set-Content -Path "requirements.txt" -Encoding UTF8
