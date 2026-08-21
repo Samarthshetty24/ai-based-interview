@@ -1,9 +1,10 @@
 ﻿import os
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from backend.database import engine, Base
 from backend.routers import auth, resume, interview, report
 
+# Initialize database schemas
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -20,12 +21,12 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
+@app.get('/', status_code=status.HTTP_200_OK)
+@app.head('/', status_code=status.HTTP_200_OK)
+def health_check():
+    return {'status': 'online', 'message': 'AI Interviewer 24/7 Engine Active'}
+
 app.include_router(auth.router)
 app.include_router(resume.router)
 app.include_router(interview.router)
 app.include_router(report.router)
-
-@app.get('/')
-@app.head('/')
-def health_check():
-    return {'status': 'online', 'message': 'AI Interviewer 24/7 Engine Active'}
