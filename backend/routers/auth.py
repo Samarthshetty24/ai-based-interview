@@ -1,31 +1,72 @@
+﻿import os
+from datetime import datetime, timedelta
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.models import User
 from backend.schemas.schemas import UserRegister, UserLogin, Token
-from backend.dependencies import get_password_hash, verify_password, create_access_token
 
-router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+SECRET_KEY = os.getenv('SECRET_KEY', 'your-fallback-secret-key-32-chars-minimum')
+ALGORITHM = 'HS256'
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
-@router.post("/register", response_model=Token)
-def register(user_data: UserRegister, db: Session = Depends(get_db)):
-    if db.query(User).filter(User.email == user_data.email).first():
-        raise HTTPException(status_code=400, detail="Email already registered")
-    user = User(
-        name=user_data.name,
-        email=user_data.email,
-        password_hash=get_password_hash(user_data.password)
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/auth/login')
+
+router = APIRouter()
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({'exp': expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail='Could not validate credentials',
+        headers={'WWW-Authenticate': 'Bearer'},
     )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    token = create_access_token({"sub": user.email})
-    return {"access_token": token, "token_type": "bearer", "user_name": user.name, "user_email": user.email}
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get('sub')
+        if email is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
 
-@router.post("/login", response_model=Token)
-def login(login_data: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == login_data.email).first()
-    if not user or not verify_password(login_data.password, user.password_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
-    token = create_access_token({"sub": user.email})
-    return {"access_token": token, "token_type": "bearer", "user_name": user.name, "user_email": user.email}
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
+        raise credentials_exception
+    return user
+
+@router.post('/register', response_model=Token)
+def register(user_data: UserRegister, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail='Email already registered')
+    hashed = get_password_hash(user_data.password)
+    new_user = User(email=user_data.email, hashed_password=hashed)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    access_token = create_access_token(data={'sub': new_user.email})
+    return {'access_token': access_token, 'token_type': 'bearer'}
+
+@router.post('/login', response_model=Token)
+def login(user_data: UserLogin, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == user_data.email).first()
+    if not user or not verify_password(user_data.password, user.hashed_password):
+        raise HTTPException(status_code=400, detail='Invalid email or password')
+    access_token = create_access_token(data={'sub': user.email})
+    return {'access_token': access_token, 'token_type': 'bearer'}
