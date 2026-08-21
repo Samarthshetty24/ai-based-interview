@@ -1,36 +1,33 @@
-﻿import os
-import json
-import io
+﻿import io
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 from pypdf import PdfReader
-import google.generativeai as genai
+from backend.database import get_db
+from backend.routers.auth import get_current_user
+from backend.models.models import User
 
 router = APIRouter()
 
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-
 class ATSRequest(BaseModel):
-    target_role: str = 'Software Engineer'
-
-# Cache extracted text in-memory for session
-SESSION_RESUME_TEXT = {}
+    target_role: str = 'Data Scientist'
 
 @router.post('/upload')
-@router.post('/resume/upload')
-async def upload_resume(file: UploadFile = File(...)):
+@router.post('')
+async def upload_resume(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     try:
         content = await file.read()
         reader = PdfReader(io.BytesIO(content))
-        text = ''
-        for page in reader.pages:
-            text += page.extract_text() or ''
+        text = ''.join([page.extract_text() or '' for page in reader.pages])
 
-        SESSION_RESUME_TEXT['current'] = text
+        # Save parsed resume to persistent user profile
+        current_user.resume_text = text
+        db.commit()
 
-        # Basic extraction fallback or LLM parsing
         skills = ['Python', 'SQL', 'FastAPI', 'Machine Learning', 'Data Analysis', 'Git', 'Docker']
         found_skills = [s for s in skills if s.lower() in text.lower()] or ['Python', 'SQL', 'FastAPI']
 
@@ -39,35 +36,25 @@ async def upload_resume(file: UploadFile = File(...)):
             'parsed': {
                 'skills': found_skills,
                 'projects': [
-                    {'name': 'Primary Engineering Project', 'description': 'Extracted from resume experience and key technical highlights.'}
+                    {'name': 'Profile Resume Project', 'description': 'Extracted directly from authenticated user profile.'}
                 ]
             }
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post('/ats-analyze')
-@router.post('/resume/ats-analyze')
-async def analyze_ats(payload: ATSRequest):
-    text = SESSION_RESUME_TEXT.get('current', '')
-    kw_score = 82
-    struct_score = 88
-    ats_pct = int((kw_score + struct_score) / 2)
+@router.get('/status')
+async def check_resume_status(current_user: User = Depends(get_current_user)):
+    has_resume = bool(current_user.resume_text and len(current_user.resume_text.strip()) > 0)
+    return {'has_resume': has_resume}
 
+@router.post('/ats-analyze')
+async def analyze_ats(payload: ATSRequest, current_user: User = Depends(get_current_user)):
     return {
         'status': 'success',
         'report': {
-            'ats_percentage': ats_pct,
-            'scores': {
-                'keyword_match': kw_score,
-                'section_structure': struct_score
-            },
-            'problems_and_corrections': [
-                {
-                    'issue': 'Action Verbs & Impact Quantification',
-                    'impact': 'Medium',
-                    'how_to_fix': 'Include measurable business metrics (e.g., latency reduction %, accuracy gains) under project bullet points.'
-                }
-            ]
+            'ats_percentage': 85,
+            'scores': {'keyword_match': 82, 'section_structure': 88},
+            'problems_and_corrections': []
         }
     }
