@@ -34,15 +34,18 @@ const api = {
             return;
         }
 
+        const text = await res.text();
         let data;
         try {
-            data = await res.json();
-        } catch (e) {
-            const text = await res.text();
+            data = text ? JSON.parse(text) : {};
+        } catch {
             throw new Error(text || 'Server Error');
         }
 
-        if (!res.ok) throw new Error(data.detail || 'API Request Failed');
+        if (!res.ok) {
+            throw new Error(data.detail || data.message || `Request failed with status ${res.status}`);
+        }
+
         return data;
     }
 };
