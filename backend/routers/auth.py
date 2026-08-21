@@ -10,7 +10,7 @@ from backend.database import get_db
 from backend.models.models import User
 from backend.schemas.schemas import UserRegister, UserLogin, Token
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'your-fallback-secret-key-32-chars-minimum')
+SECRET_KEY = os.getenv('SECRET_KEY', 'zero-shot-interview-analyzer-super-secret-key-32chars')
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
@@ -20,7 +20,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/auth/login')
 router = APIRouter()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return pwd_context.verify(plain_password, hashed_password)
+    except Exception:
+        import bcrypt
+        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
@@ -51,6 +55,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     return user
 
 @router.post('/register', response_model=Token)
+@router.post('/auth/register', response_model=Token)
 def register(user_data: UserRegister, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
@@ -64,6 +69,7 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 @router.post('/login', response_model=Token)
+@router.post('/auth/login', response_model=Token)
 def login(user_data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == user_data.email).first()
     if not user or not verify_password(user_data.password, user.hashed_password):
