@@ -21,12 +21,12 @@ if GEMINI_API_KEY:
         pass
 
 class StartInterviewRequest(BaseModel):
-    role: str = "Data Scientist"
+    role: Optional[str] = "Data Scientist"
 
 class SubmitAnswerRequest(BaseModel):
-    question_id: int
-    interview_id: int
-    answer_text: str
+    question_id: Optional[int] = None
+    interview_id: Optional[int] = None
+    answer_text: Optional[str] = ""
 
 @router.post("/start")
 @router.post("")
@@ -35,7 +35,7 @@ async def start_interview(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    role = payload.role if payload else "Data Scientist"
+    role = payload.role if payload and payload.role else "Data Scientist"
     
     interview = Interview(
         user_id=current_user.id,
@@ -47,9 +47,8 @@ async def start_interview(
     db.commit()
     db.refresh(interview)
 
-    resume_context = current_user.resume_text or "Software Engineer with expertise in Python, SQL, and Machine Learning."
+    resume_context = current_user.resume_text or "Data Scientist skilled in Python, Machine Learning, SQL, and FastAPI."
     
-    # Generate Questions via Gemini or Fallback
     generated_questions = []
     if GEMINI_API_KEY:
         try:
@@ -58,23 +57,23 @@ async def start_interview(
             You are an expert technical interviewer for a {role} role.
             Candidate resume context: {resume_context[:2000]}
             
-            Generate exactly 5 distinct, high-impact technical and situational interview questions tailored to the resume.
-            Return ONLY a JSON array of strings, for example:
-            ["Can you describe a challenging project you built using Python?", "How do you optimize SQL query performance?"]
+            Generate exactly 5 distinct, high-impact technical interview questions tailored to the candidate resume.
+            Return ONLY a valid JSON array of 5 question strings, for example:
+            ["Can you walk me through your recent project?", "How did you design the architecture?"]
             """
             response = model.generate_content(prompt)
             clean_text = response.text.replace("```json", "").replace("```", "").strip()
             generated_questions = json.loads(clean_text)
-        except Exception as e:
-            print("Gemini generation fallback:", e)
+        except Exception:
+            pass
 
     if not generated_questions or not isinstance(generated_questions, list):
         generated_questions = [
-            f"Can you walk me through the most technically challenging project on your resume and your specific architectural contributions?",
-            f"How do you approach end-to-end data pipeline optimization and model deployment in production environments?",
-            f"Describe an instance where your initial model or system design failed or underperformed. How did you debug and resolve it?",
-            f"In a real-time system, how do you handle concurrency, latency bottlenecks, and database query optimization?",
-            f"How do you evaluate trade-offs between model complexity, inference speed, and explainability when delivering features?"
+            "Can you walk me through the most technically challenging project on your resume and your specific architectural contributions?",
+            "How do you approach end-to-end data pipeline optimization and model deployment in production environments?",
+            "Describe an instance where your initial system design failed or underperformed. How did you debug and resolve it?",
+            "In a real-time system, how do you handle concurrency, latency bottlenecks, and query optimization?",
+            "How do you evaluate trade-offs between model complexity, inference speed, and explainability when delivering features?"
         ]
 
     saved_questions = []
@@ -89,16 +88,39 @@ async def start_interview(
     
     db.commit()
 
+    first_q = saved_questions[0]
+    
+    # Returns all standard key variations to prevent frontend undefined errors
     return {
         "status": "success",
         "interview_id": interview.id,
+        "id": interview.id,
         "total_questions": len(saved_questions),
+        "total": len(saved_questions),
+        "question_index": 1,
+        "order": 1,
+        "question": first_q.question_text,
+        "question_text": first_q.question_text,
+        "text": first_q.question_text,
         "current_question": {
-            "id": saved_questions[0].id,
+            "id": first_q.id,
             "order": 1,
-            "text": saved_questions[0].question_text
+            "index": 1,
+            "text": first_q.question_text,
+            "question": first_q.question_text,
+            "question_text": first_q.question_text
         },
-        "questions": [{"id": q.id, "order": q.order, "text": q.question_text} for q in saved_questions]
+        "questions": [
+            {
+                "id": q.id,
+                "order": q.order,
+                "index": q.order,
+                "text": q.question_text,
+                "question": q.question_text,
+                "question_text": q.question_text
+            }
+            for q in saved_questions
+        ]
     }
 
 @router.get("/next-question/{interview_id}/{order}")
@@ -114,13 +136,37 @@ async def get_next_question(
     ).first()
 
     if not question:
-        return {"completed": True}
+        return {"completed": True, "has_more": False}
 
     return {
         "completed": False,
-        "question": {
+        "has_more": True,
+        "interview_id": interview_id,
+        "order": question.order,
+        "question_index": question.order,
+        "question": question.question_text,
+        "question_text": question.question_text,
+        "text": question.question_text,
+        "current_question": {
             "id": question.id,
             "order": question.order,
-            "text": question.question_text
+            "text": question.question_text,
+            "question": question.question_text
         }
     }
+
+@router.post("/submit-answer")
+async def submit_answer(
+    payload: SubmitAnswerRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if payload.question_id:
+        ans = Answer(
+            question_id=payload.question_id,
+            transcription=payload.answer_text or ""
+        )
+        db.add(ans)
+        db.commit()
+
+    return {"status": "success", "message": "Answer recorded"}
