@@ -1,828 +1,218 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adaptive AI Interview | Upload & Live Session</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Interview Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    :root {
-      --bg-dark: #0b0f19;
-      --bg-card: rgba(18, 24, 38, 0.85);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-glow: rgba(59, 130, 246, 0.4);
-      --accent-blue: #3b82f6;
-      --accent-indigo: #6366f1;
-      --accent-purple: #a855f7;
-      --accent-cyan: #06b6d4;
-      --accent-yellow: #f59e0b;
-      --accent-green: #10b981;
-      --accent-red: #f43f5e;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      min-height: 100vh;
-      background-image: 
-        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
-        radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at 15% 70%, rgba(6, 182, 212, 0.1) 0%, transparent 40%);
-      background-attachment: fixed;
-    }
-
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 36px;
-      background: rgba(11, 15, 25, 0.85);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-subtle);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .brand-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-    }
-
-    .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 1.1rem;
-      color: #fff;
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
-    }
-
-    .brand-title { font-size: 1.15rem; font-weight: 700; color: #fff; }
-
-    .nav-center {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 4px 6px;
-      border-radius: 9999px;
-      border: 1px solid var(--border-subtle);
-    }
-
-    .nav-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 18px;
-      border-radius: 9999px;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
-    }
-
-    .nav-pill:hover { color: #fff; }
-    .nav-pill.active {
-      background: var(--accent-blue);
-      color: #fff;
-      box-shadow: 0 0 14px rgba(59, 130, 246, 0.5);
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 36px 20px 80px;
-    }
-
-    .branch-grid, .role-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-      margin-bottom: 32px;
-    }
-
-    .branch-card-exact {
-      background: rgba(18, 24, 38, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 24px 22px 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 280px;
-      transition: all 0.25s ease;
-      backdrop-filter: blur(12px);
-      position: relative;
-    }
-
-    .branch-card-exact:hover {
-      border-color: rgba(59, 130, 246, 0.4);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-    }
-
-    .branch-card-exact.ai-matched {
-      border: 2px solid var(--accent-cyan) !important;
-      box-shadow: 0 0 25px rgba(6, 182, 212, 0.45) !important;
-      background: rgba(15, 30, 55, 0.9) !important;
-    }
-
-    .ai-match-badge {
-      position: absolute;
-      top: -12px;
-      right: 16px;
-      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .branch-header-top {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .branch-glyph { font-size: 1.35rem; }
-
-    .branch-chip, .roles-badge {
-      padding: 3px 12px;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      display: inline-block;
-    }
-
-    .branch-title-row {
-      font-size: 1.08rem;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.3;
-      margin-bottom: 6px;
-    }
-
-    .branch-abbr-tag {
-      font-size: 0.8rem;
-      font-weight: 700;
-      margin-left: 4px;
-    }
-
-    .branch-subtext {
-      font-size: 0.88rem;
-      color: #94a3b8;
-      line-height: 1.45;
-      margin-bottom: 16px;
-    }
-
-    .btn-explore, .btn-start-role {
-      width: 100%;
-      padding: 10px 0;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-    }
-
-    .btn-explore:hover, .btn-start-role:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .action-btn-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 28px;
-      border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .action-btn-pill.primary {
-      background: linear-gradient(135deg, #2563eb, #6366f1);
-      border-color: transparent;
-      box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
-    }
-
-    .config-layout {
-      display: grid;
-      grid-template-columns: 1.6fr 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    .round-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      margin-bottom: 12px;
-    }
-
-    .stepper-counter {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-counter {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border-subtle);
-      color: #fff;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .answer-textarea {
-      width: 100%;
-      min-height: 120px;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      color: #fff;
-      font-family: inherit;
-      font-size: 1rem;
-      padding: 14px;
-      outline: none;
-      resize: vertical;
-      line-height: 1.5;
-    }
-
-    .answer-textarea:focus {
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 14px rgba(59, 130, 246, 0.35);
-    }
-
-    .ai-orb {
-      width: 84px;
-      height: 84px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-      box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
-      transition: all 0.3s ease;
-    }
-
-    .ai-orb.speaking {
-      animation: speakingPulse 1.2s infinite ease-in-out;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-    }
-
-    @keyframes speakingPulse {
-      0% { transform: scale(1); box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
-      50% { transform: scale(1.1); box-shadow: 0 0 35px rgba(6, 182, 212, 0.9); }
-      100% { transform: scale(1); box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
-    }
+    body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, sans-serif; }
+    .glass-card { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .pulse-glow { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.05); opacity: 1; } }
   </style>
 </head>
-<body>
-  <nav class="navbar">
-    <a href="dashboard.html" class="brand-wrapper">
-      <div class="brand-icon"><i class="fa-solid fa-brain"></i></div>
-      <span class="brand-title">AI Interviewer</span>
-    </a>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
 
-    <div class="nav-center">
-      <a href="dashboard.html" class="nav-pill"><i class="fa-solid fa-table-columns"></i> Dashboard</a>
-      <a href="interview.html" class="nav-pill active"><i class="fa-solid fa-video"></i> Interview</a>
-      <a href="ats.html" class="nav-pill"><i class="fa-solid fa-bullseye"></i> ATS Analyser</a>
+  <div class="w-full max-w-4xl glass-card rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col gap-6">
+
+    <!-- Header Orb -->
+    <div class="flex flex-col items-center justify-center text-center">
+      <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-600 flex items-center justify-center pulse-glow mb-3 shadow-lg shadow-indigo-500/30">
+        <i class="fa-solid fa-brain text-2xl text-white"></i>
+      </div>
+      <h2 id="aiStatus" class="text-xs font-bold text-indigo-400 uppercase tracking-widest">AI Interviewer Ready</h2>
     </div>
 
-    <div style="font-size: 0.85rem; color: var(--text-muted);">
-      Adaptive Resume Engine
-    </div>
-  </nav>
-
-  <main class="container">
-
-    <!-- STEP 1: UPLOAD RESUME -->
-    <section id="step-upload" style="max-width: 680px; margin: 0 auto; text-align: center;">
-      <span class="roles-badge" style="background: rgba(59,130,246,0.15); color: var(--accent-cyan); border: 1px solid rgba(59,130,246,0.3); margin-bottom: 12px;">
-        <i class="fa-solid fa-file-arrow-up"></i> Step 1 of 4: Resume Ingestion
-      </span>
-      <h1 style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 8px;">Upload Your Resume</h1>
-      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 28px;">
-        Our NLP engine analyzes your skills, recommends your engineering branch, and generates custom questions from your projects.
-      </p>
-
-      <div style="border: 2px dashed var(--border-glow); padding: 42px 20px; border-radius: var(--radius-md); background: rgba(18, 24, 38, 0.85); backdrop-filter: blur(16px); cursor: pointer; margin-bottom: 20px;" onclick="document.getElementById('resume-file-input').click()">
-        <input type="file" id="resume-file-input" accept=".pdf" style="display: none;" onchange="handleResumeIngestion()">
-        <div style="width: 58px; height: 58px; border-radius: 50%; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.5rem; color: var(--accent-cyan);">
-          <i class="fa-solid fa-cloud-arrow-up"></i>
-        </div>
-        <p style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 4px;">Click to Select PDF Resume</p>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px;">Supports .pdf format up to 10MB</p>
-        <button class="action-btn-pill" style="padding: 8px 22px; font-size: 0.85rem;" onclick="event.stopPropagation(); document.getElementById('resume-file-input').click();">Browse Files</button>
-      </div>
-
-      <div id="upload-status-box" style="display: none; padding: 20px;">
-        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--accent-blue);"></i>
-        <p style="color: var(--text-muted); margin-top: 10px; font-size: 0.9rem;">Extracting competencies &amp; identifying matching branch...</p>
-      </div>
-    </section>
-
-    <!-- STEP 2: CHOOSE BRANCH -->
-    <section id="step-branch" style="display: none;">
-      <div style="text-align: center; margin-bottom: 36px;">
-        <span class="roles-badge" style="background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); margin-bottom: 12px;">
-          <i class="fa-solid fa-code-branch"></i> Step 2 of 4: Engineering Branch
+    <!-- Question Box -->
+    <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-6 flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <span id="qBadge" class="bg-cyan-950/80 border border-cyan-800/60 text-cyan-400 text-xs px-3.5 py-1 rounded-full font-semibold">
+          Question 1 / 5
         </span>
-        <h1 style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 8px;">Choose Your Branch</h1>
-        <p id="branch-subheading" style="color: var(--text-muted); font-size: 0.95rem;">
-          We matched your resume to the highlighted branch below. You can confirm it or choose another.
-        </p>
+        <span class="bg-emerald-950/80 border border-emerald-800/60 text-emerald-400 text-xs px-3.5 py-1 rounded-full font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-microchip"></i> Grounded in Your Resume
+        </span>
       </div>
 
-      <div class="branch-grid">
-        <!-- Computer Science -->
-        <div class="branch-card-exact" id="branch-card-cs">
-          <div id="badge-cs" style="display: none;" class="ai-match-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI MATCHED</div>
-          <div>
-            <div class="branch-header-top">
-              <span class="branch-glyph" style="color: #cbd5e1;">&lt;/&gt;</span>
-              <span class="branch-chip" style="background: rgba(168, 85, 247, 0.18); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">18 Roles</span>
-            </div>
-            <div class="branch-title-row">Computer Science <span class="branch-abbr-tag" style="color: #a855f7;">CSE</span></div>
-            <div class="branch-subtext">Software Engineering, Data Science, AI/ML, DevOps, Cloud &amp; Security</div>
-          </div>
-          <button class="btn-explore" onclick="selectBranch('Computer Science')">Select Branch &gt;</button>
-        </div>
+      <h1 id="questionText" class="text-lg md:text-xl font-bold text-white leading-relaxed min-h-[80px] flex items-center">
+        Click "Begin Interview" below to initialize your personalized technical assessment.
+      </h1>
+    </div>
 
-        <!-- ECE -->
-        <div class="branch-card-exact" id="branch-card-ece">
-          <div id="badge-ece" style="display: none;" class="ai-match-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI MATCHED</div>
-          <div>
-            <div class="branch-header-top">
-              <span class="branch-glyph" style="color: #06b6d4;"><i class="fa-solid fa-microchip"></i></span>
-              <span class="branch-chip" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3);">10 Roles</span>
-            </div>
-            <div class="branch-title-row">Electronics &amp; Comm <span class="branch-abbr-tag" style="color: #06b6d4;">ECE</span></div>
-            <div class="branch-subtext">VLSI, Embedded Systems, Signal Processing, RF &amp; Hardware</div>
-          </div>
-          <button class="btn-explore" onclick="selectBranch('ECE')">Select Branch &gt;</button>
-        </div>
+    <!-- Answer Box -->
+    <div class="flex flex-col gap-2">
+      <textarea id="answerInput" rows="4" 
+        class="w-full bg-gray-950/90 border border-gray-800 rounded-2xl p-4 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition text-sm"
+        placeholder="Start speaking (mic will transcribe here) or type your answer directly..."></textarea>
+    </div>
 
-        <!-- EEE -->
-        <div class="branch-card-exact" id="branch-card-eee">
-          <div id="badge-eee" style="display: none;" class="ai-match-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI MATCHED</div>
-          <div>
-            <div class="branch-header-top">
-              <span class="branch-glyph" style="color: #eab308;"><i class="fa-solid fa-bolt"></i></span>
-              <span class="branch-chip" style="background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3);">5 Roles</span>
-            </div>
-            <div class="branch-title-row">Electrical Engineering <span class="branch-abbr-tag" style="color: #eab308;">EEE</span></div>
-            <div class="branch-subtext">Power Systems, Control Systems, Power Electronics &amp; Renewables</div>
-          </div>
-          <button class="btn-explore" onclick="selectBranch('EEE')">Select Branch &gt;</button>
-        </div>
+    <!-- Controls -->
+    <div class="flex gap-3">
+      <button id="micBtn" onclick="toggleMic()" class="px-6 py-4 bg-gray-900 hover:bg-gray-800 border border-gray-800 text-gray-200 rounded-2xl font-semibold text-sm transition flex items-center gap-2">
+        <i id="micIcon" class="fa-solid fa-microphone text-indigo-400"></i>
+        <span id="micLabel">Speak</span>
+      </button>
 
-        <!-- Mechanical -->
-        <div class="branch-card-exact" id="branch-card-me">
-          <div id="badge-me" style="display: none;" class="ai-match-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI MATCHED</div>
-          <div>
-            <div class="branch-header-top">
-              <span class="branch-glyph" style="color: #f43f5e;"><i class="fa-solid fa-gears"></i></span>
-              <span class="branch-chip" style="background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3);">5 Roles</span>
-            </div>
-            <div class="branch-title-row">Mechanical Eng <span class="branch-abbr-tag" style="color: #f43f5e;">ME</span></div>
-            <div class="branch-subtext">CAD/CAM, Thermal Systems, Automotive, Robotics &amp; Maintenance</div>
-          </div>
-          <button class="btn-explore" onclick="selectBranch('Mechanical')">Select Branch &gt;</button>
-        </div>
+      <button id="actionBtn" onclick="handleAction()" 
+        class="flex-1 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-2xl font-bold text-base transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+        <span>Begin Interview</span>
+      </button>
+    </div>
 
-        <!-- Civil -->
-        <div class="branch-card-exact" id="branch-card-ce">
-          <div id="badge-ce" style="display: none;" class="ai-match-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI MATCHED</div>
-          <div>
-            <div class="branch-header-top">
-              <span class="branch-glyph" style="color: #10b981;"><i class="fa-solid fa-building"></i></span>
-              <span class="branch-chip" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">5 Roles</span>
-            </div>
-            <div class="branch-title-row">Civil Engineering <span class="branch-abbr-tag" style="color: #10b981;">CE</span></div>
-            <div class="branch-subtext">Structural Analysis, Construction, Geotechnical &amp; Transportation</div>
-          </div>
-          <button class="btn-explore" onclick="selectBranch('Civil')">Select Branch &gt;</button>
-        </div>
-
-        <!-- Architecture -->
-        <div class="branch-card-exact" id="branch-card-arch">
-          <div id="badge-arch" style="display: none;" class="ai-match-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI MATCHED</div>
-          <div>
-            <div class="branch-header-top">
-              <span class="branch-glyph" style="color: #ec4899;"><i class="fa-solid fa-compass-drafting"></i></span>
-              <span class="branch-chip" style="background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3);">5 Roles</span>
-            </div>
-            <div class="branch-title-row">Architecture <span class="branch-abbr-tag" style="color: #ec4899;">ARCH</span></div>
-            <div class="branch-subtext">Architectural Design, Urban Planning, Interior, Landscape &amp; BIM</div>
-          </div>
-          <button class="btn-explore" onclick="selectBranch('Architecture')">Select Branch &gt;</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 3: CHOOSE ROLE -->
-    <section id="step-role" style="display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <button class="action-btn-pill" style="padding: 8px 18px;" onclick="goToStep('step-branch')">
-          <i class="fa-solid fa-arrow-left"></i> Change Branch
-        </button>
-        <span class="roles-badge" style="background: rgba(59,130,246,0.15); color: var(--accent-cyan);">Select Your Target Profile</span>
-      </div>
-
-      <div class="role-grid">
-        <div class="branch-card-exact" style="min-height: 200px;">
-          <div>
-            <div class="branch-title-row">Data Scientist <span class="branch-abbr-tag" style="color: var(--accent-yellow);">DS</span></div>
-            <div class="branch-subtext">ML, Statistics, Python, SQL, Predictive Modeling</div>
-          </div>
-          <button class="btn-start-role" style="background: linear-gradient(135deg, var(--accent-yellow), #d97706);" onclick="selectRole('Data Scientist')">Select DS Role &gt;</button>
-        </div>
-
-        <div class="branch-card-exact" style="min-height: 200px;">
-          <div>
-            <div class="branch-title-row">Machine Learning Engineer <span class="branch-abbr-tag" style="color: var(--accent-purple);">MLE</span></div>
-            <div class="branch-subtext">Deep Learning, MLOps, PyTorch, Model Pipelines</div>
-          </div>
-          <button class="btn-start-role" onclick="selectRole('Machine Learning Engineer')">Select MLE Role &gt;</button>
-        </div>
-
-        <div class="branch-card-exact" style="min-height: 200px;">
-          <div>
-            <div class="branch-title-row">Software Engineer <span class="branch-abbr-tag" style="color: var(--accent-blue);">SWE</span></div>
-            <div class="branch-subtext">DSA, System Design, FastAPI, OOP, Databases</div>
-          </div>
-          <button class="btn-start-role" onclick="selectRole('Software Engineer')">Select SWE Role &gt;</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 4: INTERVIEW CONFIGURATION -->
-    <section id="step-config" style="display: none;">
-      <div style="margin-bottom: 24px;">
-        <button class="action-btn-pill" style="padding: 8px 18px;" onclick="goToStep('step-role')">
-          <i class="fa-solid fa-arrow-left"></i> Change Role
-        </button>
-      </div>
-
-      <div class="config-layout">
-        <div class="branch-card-exact" style="padding: 28px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="font-size: 1.25rem; font-weight: 700; color: #fff;">Interview Configuration</h2>
-            <span class="roles-badge" id="total-q-badge" style="background: rgba(59,130,246,0.15); color: var(--accent-cyan); border: 1px solid rgba(59,130,246,0.3);">10 total</span>
-          </div>
-
-          <div class="round-row">
-            <span style="font-weight: 600;">Statistics <span style="font-size: 0.8rem; color: var(--text-muted);">(45s)</span></span>
-            <div class="stepper-counter">
-              <button class="btn-counter" onclick="adjustCount('stat', -1)">-</button>
-              <span id="count-stat" style="font-weight: 700;">2</span>
-              <button class="btn-counter" onclick="adjustCount('stat', 1)">+</button>
-            </div>
-          </div>
-
-          <div class="round-row">
-            <span style="font-weight: 600;">Machine Learning <span style="font-size: 0.8rem; color: var(--text-muted);">(60s)</span></span>
-            <div class="stepper-counter">
-              <button class="btn-counter" onclick="adjustCount('ml', -1)">-</button>
-              <span id="count-ml" style="font-weight: 700;">2</span>
-              <button class="btn-counter" onclick="adjustCount('ml', 1)">+</button>
-            </div>
-          </div>
-
-          <div class="round-row">
-            <span style="font-weight: 600;">SQL &amp; Data <span style="font-size: 0.8rem; color: var(--text-muted);">(45s)</span></span>
-            <div class="stepper-counter">
-              <button class="btn-counter" onclick="adjustCount('sql', -1)">-</button>
-              <span id="count-sql" style="font-weight: 700;">2</span>
-              <button class="btn-counter" onclick="adjustCount('sql', 1)">+</button>
-            </div>
-          </div>
-
-          <div class="round-row">
-            <span style="font-weight: 600;">Case Study <span style="font-size: 0.8rem; color: var(--text-muted);">(90s)</span></span>
-            <div class="stepper-counter">
-              <button class="btn-counter" onclick="adjustCount('case', -1)">-</button>
-              <span id="count-case" style="font-weight: 700;">2</span>
-              <button class="btn-counter" onclick="adjustCount('case', 1)">+</button>
-            </div>
-          </div>
-
-          <div class="round-row">
-            <span style="font-weight: 600;">Behavioral <span style="font-size: 0.8rem; color: var(--text-muted);">(45s)</span></span>
-            <div class="stepper-counter">
-              <button class="btn-counter" onclick="adjustCount('beh', -1)">-</button>
-              <span id="count-beh" style="font-weight: 700;">2</span>
-              <button class="btn-counter" onclick="adjustCount('beh', 1)">+</button>
-            </div>
-          </div>
-
-          <button class="action-btn-pill primary" style="width: 100%; justify-content: center; margin-top: 16px;" onclick="startLiveRoom()">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Interview Plan
-          </button>
-        </div>
-
-        <div class="branch-card-exact" style="padding: 28px;">
-          <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">Adaptive Architecture</h3>
-          <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px;">
-            The interview dynamically updates questions based on the candidate's resume and response depth.
-          </p>
-          <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.85rem; color: #cbd5e1;">
-            <li style="display: flex; gap: 10px;"><i class="fa-solid fa-check" style="color: var(--accent-green); margin-top: 2px;"></i> Speak or type your answers simultaneously</li>
-            <li style="display: flex; gap: 10px;"><i class="fa-solid fa-check" style="color: var(--accent-green); margin-top: 2px;"></i> Real-time speech transcription</li>
-            <li style="display: flex; gap: 10px;"><i class="fa-solid fa-check" style="color: var(--accent-green); margin-top: 2px;"></i> Radar chart evaluation report</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- STEP 5: LIVE INTERVIEW ROOM -->
-    <section id="step-live" style="display: none;">
-      <div class="video-grid">
-        <div class="branch-card-exact" style="padding: 0; overflow: hidden; background: #000; height: 320px;">
-          <video id="webcam" style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);" autoplay playsinline muted></video>
-        </div>
-        <div class="branch-card-exact" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 320px;">
-          <div class="ai-orb" id="ai-orb-visual"></div>
-          <h3 id="ai-status" style="margin-top: 20px; font-size: 1.1rem; color: #fff;">AI Interviewer Ready</h3>
-        </div>
-      </div>
-
-      <div class="branch-card-exact" style="padding: 24px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-          <span class="roles-badge" id="q-tracker" style="background: rgba(59,130,246,0.15); color: var(--accent-cyan); border: 1px solid rgba(59,130,246,0.3);">Question 1 / 10</span>
-          <span class="roles-badge" style="background: rgba(16,185,129,0.15); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.3);"><i class="fa-solid fa-file-check"></i> Grounded in Your Resume</span>
-        </div>
-
-        <h2 id="q-text" style="font-size: 1.25rem; margin-bottom: 18px; color: #fff; line-height: 1.4;">Click "Begin Interview" to start answering adaptive questions generated from your resume.</h2>
-
-        <div style="margin-bottom: 18px;">
-          <textarea id="candidate-response" class="answer-textarea" placeholder="Start speaking (mic will transcribe here) or type your answer directly..."></textarea>
-        </div>
-
-        <button id="main-btn" class="action-btn-pill primary" style="width: 100%; justify-content: center;" onclick="handleInterviewLifecycle()">
-          Begin Interview
-        </button>
-      </div>
-    </section>
-
-  </main>
+  </div>
 
   <script src="js/api.js"></script>
   <script>
-    let selectedRole = "Data Scientist";
-    let currentInterviewId = null;
-    let currentQuestionId = null;
+    let interviewId = null;
+    let questionsList = [];
+    let currentIndex = 0;
+    const totalQuestions = 5;
     let recognition = null;
     let isRecording = false;
-    let startTime = 0;
-    let localStream = null;
-    let counts = { stat: 2, ml: 2, sql: 2, case: 2, beh: 2 };
 
-    const textarea = document.getElementById("candidate-response");
+    document.addEventListener("DOMContentLoaded", () => {
+      if (typeof api !== "undefined") api.requireAuth();
+      setupSpeech();
+    });
 
-    function goToStep(stepId) {
-      ['step-upload', 'step-branch', 'step-role', 'step-config', 'step-live'].forEach(id => {
-        document.getElementById(id).style.display = (id === stepId) ? 'block' : 'none';
-      });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    async function handleResumeIngestion() {
-      const fileInput = document.getElementById("resume-file-input");
-      if (!fileInput.files[0]) return;
-
-      const formData = new FormData();
-      formData.append("file", fileInput.files[0]);
-
-      document.getElementById("upload-status-box").style.display = "block";
-
-      try {
-        const res = await api.request("/resume/upload", {
-          method: "POST",
-          body: formData
-        });
-
-        document.getElementById("upload-status-box").style.display = "none";
-        const rec = res.recommended_branch || "Computer Science";
-        highlightBranch(rec);
-        goToStep('step-branch');
-      } catch (err) {
-        document.getElementById("upload-status-box").style.display = "none";
-        alert(err.message || "Failed to parse resume.");
-      }
-    }
-
-    function highlightBranch(branch) {
-      const branchMap = {
-        "Computer Science": { card: "branch-card-cs", badge: "badge-cs" },
-        "ECE": { card: "branch-card-ece", badge: "badge-ece" },
-        "EEE": { card: "branch-card-eee", badge: "badge-eee" },
-        "Mechanical": { card: "branch-card-me", badge: "badge-me" },
-        "Civil": { card: "branch-card-ce", badge: "badge-ce" },
-        "Architecture": { card: "branch-card-arch", badge: "badge-arch" }
-      };
-
-      Object.values(branchMap).forEach(b => {
-        document.getElementById(b.card).classList.remove("ai-matched");
-        document.getElementById(b.badge).style.display = "none";
-      });
-
-      const matched = branchMap[branch] || branchMap["Computer Science"];
-      document.getElementById(matched.card).classList.add("ai-matched");
-      document.getElementById(matched.badge).style.display = "flex";
-      document.getElementById("branch-subheading").innerText = `✨ Detected ${branch} from your resume skills and projects. Confirm below to proceed.`;
-    }
-
-    function selectBranch(b) { goToStep('step-role'); }
-    function selectRole(r) { selectedRole = r; goToStep('step-config'); }
-
-    function adjustCount(k, d) {
-      counts[k] = Math.max(1, counts[k] + d);
-      document.getElementById(`count-${k}`).innerText = counts[k];
-      const total = Object.values(counts).reduce((a, b) => a + b, 0);
-      document.getElementById("total-q-badge").innerText = `${total} total`;
-    }
-
-    async function startLiveRoom() {
-      // Step 1: Make live room visible first
-      goToStep('step-live');
-      const total = Object.values(counts).reduce((a, b) => a + b, 0);
-      document.getElementById("q-tracker").innerText = `Question 1 / ${total}`;
-
-      // Step 2: Request & bind camera stream
-      try {
-        if (!localStream) {
-          localStream = await navigator.mediaDevices.getUserMedia({
-            video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-            audio: true
-          });
-        }
-        const videoElement = document.getElementById("webcam");
-        videoElement.srcObject = localStream;
-        await videoElement.play();
-      } catch (err) {
-        console.error("Camera/Mic initial error:", err);
-      }
-
-      // Step 3: Initialize Speech Recognition
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
+    function setupSpeech() {
+      if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRec();
         recognition.continuous = true;
         recognition.interimResults = true;
-        recognition.onresult = (e) => {
-          let full = "";
-          for (let i = 0; i < e.results.length; i++) full += e.results[i][0].transcript + " ";
-          if (full.trim()) textarea.value = full.trim();
+        recognition.lang = "en-US";
+
+        recognition.onresult = (event) => {
+          let text = "";
+          for (let i = 0; i < event.results.length; i++) {
+            text += event.results[i][0].transcript + " ";
+          }
+          document.getElementById("answerInput").value = text;
         };
+
+        recognition.onerror = () => stopMicUI();
+        recognition.onend = () => stopMicUI();
       }
     }
 
-    function speakQuestion(text) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Clear any pending speech queue
+    function toggleMic() {
+      if (!recognition) {
+        alert("Speech recognition not available. Please type your response.");
+        return;
+      }
+      if (isRecording) {
+        recognition.stop();
+        stopMicUI();
+      } else {
+        recognition.start();
+        isRecording = true;
+        document.getElementById("micIcon").className = "fa-solid fa-microphone-slash text-red-400";
+        document.getElementById("micLabel").innerText = "Stop";
+        document.getElementById("aiStatus").innerText = "Listening to Candidate...";
+      }
+    }
 
+    function stopMicUI() {
+      isRecording = false;
+      document.getElementById("micIcon").className = "fa-solid fa-microphone text-indigo-400";
+      document.getElementById("micLabel").innerText = "Speak";
+      document.getElementById("aiStatus").innerText = "AI Interviewer Ready";
+    }
+
+    function speakText(text) {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         utter.rate = 1.0;
-        utter.pitch = 1.0;
-
-        const orb = document.getElementById("ai-orb-visual");
-        const status = document.getElementById("ai-status");
-
-        status.innerText = "AI Interviewer Speaking...";
-        orb.classList.add("speaking");
-
-        utter.onend = () => {
-          orb.classList.remove("speaking");
-          status.innerText = "Listening to Candidate...";
-          textarea.value = "";
-          isRecording = true;
-          startTime = Date.now();
-          if (recognition) {
-            try { recognition.start(); } catch(e){}
-          }
-          document.getElementById("main-btn").innerText = "Submit Answer";
-        };
-
-        utter.onerror = () => {
-          orb.classList.remove("speaking");
-          status.innerText = "Listening to Candidate...";
-          isRecording = true;
-          startTime = Date.now();
-          if (recognition) {
-            try { recognition.start(); } catch(e){}
-          }
-          document.getElementById("main-btn").innerText = "Submit Answer";
-        };
-
         window.speechSynthesis.speak(utter);
-      } else {
-        document.getElementById("ai-status").innerText = "Listening to Candidate...";
-        document.getElementById("main-btn").innerText = "Submit Answer";
       }
     }
 
-    async function handleInterviewLifecycle() {
-      const btn = document.getElementById("main-btn");
-      const totalQ = Object.values(counts).reduce((a, b) => a + b, 0);
+    async function handleAction() {
+      const btn = document.getElementById("actionBtn");
 
-      if (!currentInterviewId) {
-        btn.innerText = "Generating Grounded Question...";
-        const res = await api.request("/interview/start", { 
-          method: "POST", 
-          body: JSON.stringify({ role: selectedRole, total_questions: totalQ }) 
-        });
-        currentInterviewId = res.interview_id;
-        currentQuestionId = res.question_id;
-        document.getElementById("q-text").innerText = res.question_text;
-        document.getElementById("q-tracker").innerText = `Question ${res.sequence_number} / ${res.total_questions}`;
-        speakQuestion(res.question_text);
-      } else {
-        if (recognition) {
-          try { recognition.stop(); } catch(e){}
+      // 1. Start Interview
+      if (!interviewId) {
+        btn.disabled = true;
+        btn.innerText = "Generating Grounded Questions...";
+        try {
+          const res = await api.request("/interview/start", {
+            method: "POST",
+            body: JSON.stringify({ role: "Data Scientist" })
+          });
+
+          interviewId = res.interview_id || res.id;
+          questionsList = res.questions || [];
+          currentIndex = 0;
+
+          if (questionsList.length === 0 && res.question) {
+            questionsList = [{ id: 1, text: res.question }];
+          }
+
+          renderCurrentQuestion();
+          btn.disabled = false;
+          btn.innerHTML = "<span>Submit Answer</span> <i class='fa-solid fa-arrow-right'></i>";
+        } catch (err) {
+          alert("Failed to start: " + err.message);
+          btn.disabled = false;
+          btn.innerText = "Begin Interview";
         }
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-        }
-        isRecording = false;
-        btn.innerText = "Evaluating Answer...";
+        return;
+      }
 
-        const answerText = textarea.value.trim();
-        const duration = Math.max(5.0, (Date.now() - startTime) / 1000);
+      // 2. Submit Answer
+      if (isRecording) toggleMic();
+      const answer = document.getElementById("answerInput").value.trim();
+      const currentQ = questionsList[currentIndex] || {};
 
-        const res = await api.request("/interview/submit-answer", {
+      btn.disabled = true;
+      btn.innerText = "Saving Answer...";
+
+      try {
+        await api.request("/interview/submit-answer", {
           method: "POST",
           body: JSON.stringify({
-            interview_id: currentInterviewId,
-            question_id: currentQuestionId,
-            transcript: answerText,
-            duration: duration
+            interview_id: interviewId,
+            question_id: currentQ.id || (currentIndex + 1),
+            order: currentIndex + 1,
+            question_index: currentIndex + 1,
+            answer_text: answer || ""
           })
         });
-
-        if (res.completed) {
-          if (localStream) {
-            localStream.getTracks().forEach(track => track.stop());
-          }
-          window.location.href = `report.html?id=${currentInterviewId}`;
-        } else {
-          currentQuestionId = res.question_id;
-          document.getElementById("q-text").innerText = res.question_text;
-          document.getElementById("q-tracker").innerText = `Question ${res.sequence_number} / ${res.total_questions}`;
-          textarea.value = "";
-          speakQuestion(res.question_text);
-        }
+      } catch (e) {
+        console.warn("Save note:", e);
       }
+
+      currentIndex++;
+
+      // 3. Completed Check (Finished 5 Questions)
+      if (currentIndex >= totalQuestions || currentIndex >= questionsList.length) {
+        document.getElementById("qBadge").innerText = "Completed";
+        document.getElementById("questionText").innerText = "Assessment Complete! Generating Performance Report...";
+        btn.innerText = "Redirecting to Report...";
+        setTimeout(() => {
+          window.location.href = `report.html?interview_id=${interviewId}`;
+        }, 1000);
+        return;
+      }
+
+      // 4. Render Next Question
+      renderCurrentQuestion();
+      document.getElementById("answerInput").value = "";
+      btn.disabled = false;
+      btn.innerHTML = "<span>Submit Answer</span> <i class='fa-solid fa-arrow-right'></i>";
+    }
+
+    function renderCurrentQuestion() {
+      const q = questionsList[currentIndex];
+      const qText = q ? (q.text || q.question || q.question_text || q) : `Interview Question ${currentIndex + 1}`;
+      
+      document.getElementById("qBadge").innerText = `Question ${currentIndex + 1} / ${totalQuestions}`;
+      document.getElementById("questionText").innerText = qText;
+      speakText(qText);
     }
   </script>
 </body>
